@@ -1,23 +1,18 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../action/index";
 
 const TodoInput = ({ setTodos, todos }) => {
   const [text, setText] = useState("");
+  const dispatch = useDispatch();
 
-  const addTodo = () => {
+  const handleAddTodo = () => {
     //edge case
     if (!text.trim()) {
       setText("");
       return;
     }
-
-    const newTodo = {
-      content: text,
-      isCompleted: false,
-    };
-    setTodos([...todos, newTodo]);
-    /*setTodos((prev) => {
-        return [...prev, newTodo];
-    })*/
+    addTodo(dispatch)(text);
     setText("");
   };
   return (
@@ -28,7 +23,7 @@ const TodoInput = ({ setTodos, todos }) => {
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <button className="btn" onClick={addTodo}>
+      <button className="btn" onClick={handleAddTodo}>
         Add
       </button>
     </div>
