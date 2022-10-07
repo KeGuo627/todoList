@@ -1,23 +1,18 @@
 import { useState } from "react";
 
-const TodoInput = ({ setTodos, todos }) => {
+const TodoInput = ({ addTodo }) => {
   const [text, setText] = useState("");
 
-  const addTodo = () => {
+  const onSumbit = (e) => {
+    e.preventDefault();
     //edge case
     if (!text.trim()) {
       setText("");
       return;
     }
+    const newTodo = { content: text, isCompleted: false };
 
-    const newTodo = {
-      content: text,
-      isCompleted: false,
-    };
-    setTodos([...todos, newTodo]);
-    /*setTodos((prev) => {
-        return [...prev, newTodo];
-    })*/
+    addTodo(newTodo);
     setText("");
   };
   return (
@@ -28,7 +23,7 @@ const TodoInput = ({ setTodos, todos }) => {
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <button className="btn" onClick={addTodo}>
+      <button className="btn" onClick={onSumbit}>
         Add
       </button>
     </div>

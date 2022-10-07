@@ -1,16 +1,10 @@
 import TodoItem from "./TodoItem";
 
-const TodoList = ({ todos, setTodos }) => {
+const TodoList = ({ todos, onMod, onDelete }) => {
   //index for delete. if there will be multiply map function, index will not unique, but not it is unique
-  const todoList = todos.map(({ content, isCompleted }, index) => {
+  const todoList = todos.map((todo) => {
     return (
-      <TodoItem
-        key={`${content} - ${index}`}
-        content={content}
-        isCompleted={isCompleted}
-        index={index}
-        setTodos={setTodos}
-      />
+      <TodoItem key={todo.id} todo={todo} onMod={onMod} onDelete={onDelete} />
     );
   });
   return <ul>{todoList}</ul>;
