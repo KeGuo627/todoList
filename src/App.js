@@ -15,7 +15,7 @@ function App() {
   const dispatch = useDispatch();
   //page loading
   useEffect(() => {
-    initTodos(dispatch);
+    initTodos(dispatch)();
   }, [dispatch]);
 
   return (
