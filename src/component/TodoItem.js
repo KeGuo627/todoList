@@ -6,9 +6,10 @@ const TodoItem = ({ content, isCompleted, index }) => {
   const dispatch = useDispatch();
 
   return (
-    <li className="todo-item">
+    <li className="todo-item" data-testid={`${content}-${index}`}>
       <span
         onDoubleClick={() => modTodo(dispatch)(index)}
+        å
         className={isCompleted ? "task-done" : "task-incompleted"}
       >
         {content}

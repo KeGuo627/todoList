@@ -23,7 +23,7 @@ const TodoInput = ({ setTodos, todos }) => {
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <button className="btn" onClick={handleAddTodo}>
+      <button className="btn" onClick={handleAddTodo} data-testid="add-button">
         Add
       </button>
     </div>
