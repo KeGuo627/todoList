@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import reducer from "./reducer/index";
 import App from "./App";
 import Header from "./component/Header";
 
