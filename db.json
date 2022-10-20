@@ -9,11 +9,6 @@
       "content": "Go to market",
       "isCompleted": true,
       "id": 4
-    },
-    {
-      "content": "See Movies",
-      "isCompleted": false,
-      "id": 5
     }
   ]
 }
