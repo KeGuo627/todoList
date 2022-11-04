@@ -3,9 +3,15 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const { v4: uuidv4 } = require("uuid");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+//connect to database
+const connectToMongoose = require("./database/connect");
+const Todo = require("./database/modal");
+connectToMongoose();
+
+//var indexRouter = require("./routes/index");
+//var usersRouter = require("./routes/users");
 
 var app = express();
 
@@ -46,37 +52,69 @@ const verifyTodoPayload = (req, isAddTodo = false) => {
   if (isAddTodo) {
     return req.body && req.body.content && req.body.isCompleted !== undefined;
   } else {
-    return req.body && req.body.index >= 0 && req.body.index < todos.length;
+    return req.body && req.body.id;
   }
 };
 //1.aLLTodos
-app.get("/allTodos", (_, res) => {
+app.get("/allTodos", async (_, res) => {
+  const todosRawData = await Todo.find({});
+  const todoLists = todosRawData.map(({ content, isCompleted, id }) => {
+    return {
+      content,
+      isCompleted,
+      id,
+    };
+  });
   console.log("retrieve all todos");
-  res.json(todos);
+  res.json(todoLists);
 });
 //2.addTodo(POST)
 //todo content will be put in the req.body => {
 //    content: "write some paper",
 //   isCompleted: false,
 //  }
-app.post("/addTodo", (req, res) => {
+app.post("/addTodo", async (req, res) => {
   //happy path
   if (verifyTodoPayload(req, true)) {
-    todos = [...todos, req.body];
-    res.json({ message: "succeed" });
-    return;
+    const todo = new Todo({
+      content: req.body.content,
+      isCompleted: req.body.isCompleted,
+      id: uuidv4(),
+    });
+    const newTodo = await todo.save();
+    if (todo === newTodo) {
+      res.status(200).json({
+        message: "succeed",
+        newTodos: {
+          content: newTodo.content,
+          isCompleted: newTodo.isCompleted,
+          id: newTodo.id,
+        },
+      });
+      return;
+    }
+    res.status("401").json({ message: "failed" });
   }
   //error handling
-  res.json({ message: "failed" });
+  res.status("400").json({ message: "failed" });
 });
 
 //3.modTodo(PUT)
 //req.body => index => 0<=index<todo.length
-app.put("/modTodo", (req, res) => {
-  //happy path
+app.put("/modTodo", async (req, res) => {
+  // happy path
   if (verifyTodoPayload(req)) {
-    const index = req.body.index;
-    todos[index].isCompleted = !todos[index].isCompleted;
+    const id = req.body.id;
+    const queryResult = await Todo.findOne({ id });
+    const { modifiedCount } = await queryResult.updateOne({
+      isCompleted: !queryResult.isCompleted,
+    });
+
+    if (modifiedCount) {
+      res.json({ message: "succeed" });
+      return;
+    }
+
     res.json({ message: "succeed" });
     return;
   }
@@ -85,13 +123,16 @@ app.put("/modTodo", (req, res) => {
 });
 
 //4.delTodo(DELETE)
-app.delete("/delTodo", (req, res) => {
+app.delete("/delTodo", async (req, res) => {
   //happy path
-  if (verifyTodoPayload(req, false)) {
-    const index = req.body.index;
-    todos = [...todos.slice(0, index), ...todos.slice(index + 1)];
-    res.json({ message: "succeed" });
-    return;
+  if (verifyTodoPayload(req)) {
+    const id = req.body.id;
+    const { deletedCount } = await Todo.deleteOne({ id });
+    if (deletedCount) {
+      res.json({ message: "succeed" });
+      return;
+    }
+    res.json({ message: "failed" });
   }
   //error handling
   res.json({ message: "failed" });

@@ -32,26 +32,23 @@ export const addTodo = (dispatch) => async (content) => {
         isCompleted: false,
       })
     );
-    const result = await response.json();
-    console.log(result);
+    const { message, newTodo } = await response.json();
+    console.log(message);
     dispatch({
       type: ADD_TODO,
-      payload: {
-        content,
-        isCompleted: false,
-      },
+      payload: newTodo,
     });
   } catch (error) {
     console.log(error);
   }
 };
-export const modTodo = (dispatch) => async (index) => {
+export const modTodo = (dispatch) => async (id) => {
   try {
     const response = await fetch(
       "/modTodo",
       ajaxConfigHelper(
         {
-          index,
+          id,
         },
         "PUT"
       )
@@ -60,19 +57,19 @@ export const modTodo = (dispatch) => async (index) => {
     console.log(result);
     dispatch({
       type: MOD_TODO,
-      payload: index,
+      payload: id,
     });
   } catch (error) {
     console.log(error);
   }
 };
-export const delTodo = (dispatch) => async (index) => {
+export const delTodo = (dispatch) => async (id) => {
   try {
     const response = await fetch(
       "/delTodo",
       ajaxConfigHelper(
         {
-          index,
+          id,
         },
         "DELETE"
       )
@@ -81,7 +78,7 @@ export const delTodo = (dispatch) => async (index) => {
     console.log(result);
     dispatch({
       type: DEL_TODO,
-      payload: index,
+      payload: id,
     });
   } catch (error) {
     console.log(error);

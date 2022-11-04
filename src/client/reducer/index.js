@@ -9,21 +9,20 @@ export const reducer = (state = [], { type, payload }) => {
       return [...state, { ...payload }];
 
     case MOD_TODO:
-      return state.map(({ content, isCompleted }, index) => {
-        if (payload !== index) {
+      return state.map((todo) => {
+        if (payload === todo.id) {
           return {
-            content,
-            isCompleted,
+            ...todo,
+            isCompleted: !todo.isCompleted,
           };
         }
-        return {
-          content,
-          isCompleted: !isCompleted,
-        };
+        return todo;
       });
 
     case DEL_TODO:
-      return [...state.slice(0, payload), ...state.slice(payload + 1)];
+      return state.filter(({ id }) => {
+        return id !== payload;
+      });
 
     default:
       return state;
